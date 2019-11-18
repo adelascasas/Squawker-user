@@ -1,0 +1,210 @@
+<html>
+<head>
+<title>Squawker</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>  
+<style>
+    body {
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+
+    h1 {
+       text-align: center;
+    }
+
+    .row {
+         width: 100%;
+          margin-left: 40px;
+    }
+    
+    .block {
+         width: 700px;
+         display: inline-block;
+    }
+</style>
+</head>
+<body>
+    <h1>Welcome to Squawker</h1>
+    <div class="row">
+        <div class="block">
+            <h3>Login</h3>
+                Username: <input type="text" id="username1"/> 
+                Password: <input type="text" id="password1"/> 
+                <button type="button" id="login">Login</button> 
+            <h3>Add User</h3>
+                Username: <input type="text" id="username2"/> 
+                Password: <input type="text" id="password2"/> 
+                Email: <input type="text" id="email1"/> 
+                <button type="button" id="adduser">Add User</button> 
+            <h3>Verify User</h3>
+                Email: <input type="text" id="email2"/> 
+                Key: <input type="text" id="key"/> 
+                <button type="button" id="verifyuser">Verify</button> 
+            <h3>Get Squawk</h3>
+                Id: <input type="text" id="itemid"/> 
+                <button type="button" id="getItem">Get</button>  
+            <h3>Add Squawk</h3>
+                content: <input type="text" id="content"/> 
+                childType: <input type="text" id="childType"/> 
+            <button type="button" id="addSquawk">Add Squawk</button>
+            <h3>Search Squawks</h3>
+                limit: <input type="text" id="limit"/> 
+                timestamp: <input type="text" id="timestamp"/> 
+                query: <input type="text" id="q"/> 
+                username: <input type="text" id="username8"/> 
+                <input type="checkbox" id="following"/>following
+                <button type="button" id="Search">Search</button>    
+            <h3>Logout</h3>
+                <button type="button" id="logout">Logout</button> 
+        </div>
+        <div class="block">
+                <h3>Delete Squawk</h3>
+                id: <input type="text" id="delid"/> 
+                <button type="button" id="delete">Search</button> 
+                <h3>Get User</h3>
+                username: <input type="text" id="username3"/> 
+                <button type="button" id="getuser">Search</button> 
+                <h3>Get Posts</h3>
+                username: <input type="text" id="username4"/> 
+                limit: <input type="text" id="limit2"/> 
+                <button type="button" id="getposts">Search</button> 
+                <h3>Get Followers</h3>
+                username: <input type="text" id="username5"/> 
+                limit: <input type="text" id="limit3"/> 
+                <button type="button" id="getfollowers">Search</button>
+                <h3>Get Following</h3>
+                username: <input type="text" id="username6"/> 
+                limit: <input type="text" id="limit4"/> 
+                <button type="button" id="getfollowing">Search</button>
+                <h3>Follow</h3>
+                username: <input type="text" id="username7"/> 
+                 <input type="checkbox" id="checkfollow"/> follow
+                <button type="button" id="follow">Search</button>      
+        </div>
+    </div>
+    <h3 id="result" style="text-align: center"></h3>
+</body>
+<script> 
+    $(document).ready(function() {
+        $('#follow').click(()=>{
+            let input = {};
+            if($('#username7').val()){
+                input.username =  $('#username7').val();
+            }
+            if($('#checkfollow').is(":checked")){
+                input.follow = true;
+            }else{
+                input.follow = false;
+            }
+            updateResponse(input,'follow','POST');
+        }); 
+        $('#getfollowers').click(()=>{
+            let query = "user";
+            if($('#username5').val()){
+                query += '/'+ $('#username5').val();
+            }
+            query += '/followers';
+            if($('#limit3').val()){
+                query += '?limit='+ $('#limit3').val();
+            }
+            updateResponse({},query,'GET');
+        }); 
+        $('#getposts').click(()=>{
+            let query = "user";
+            if($('#username4').val()){
+                query += '/'+ $('#username4').val();
+            }
+            query += '/posts';
+            if($('#limit2').val()){
+                query += '?limit='+ $('#limit2').val();
+            }
+            updateResponse({},query,'GET');
+        }); 
+        $('#getuser').click(()=>{
+            let query = "user";
+            if($('#username3').val()){
+                query += '/'+ $('#username3').val();
+            }
+            updateResponse({},query,'GET');
+        }); 
+        $('#delete').click(()=>{
+            let query  = "item";
+            if($('#delid').val()){
+                query += '/'+$('#delid').val();
+            }
+            updateResponse({},  query,'DELETE');
+        });
+        $('#Search').click(()=>{
+            let input = {};
+            if($('#limit').val()){
+                input.limit = parseInt($('#limit').val());
+            }
+            if($('#timestamp').val()){
+                input.timestamp = parseFloat($('#timestamp').val());
+            }
+            if($('#q').val()){
+                input.q = $('#q').val();
+            }
+            if($('#username8').val()){
+                input.username = $('#username8').val();
+            }
+            if($('#following').is(":checked")){
+                input.following = true;
+            }else{
+                input.following = false;
+            }
+            updateResponse(input,"search",'POST');
+        });
+        $('#addSquawk').click(()=>{
+            let input = {
+                content : $('#content').val(),
+                childType: $('#childType').val()
+            }
+            updateResponse(input,"additem",'POST');
+        });
+        $('#getItem').click(()=>{
+            let input = {
+                id : $('#itemid').val(),
+            }
+            updateResponse({},"item/"+input.id,'GET');
+        });
+        $('#login').click(()=>{
+            let input = {
+                username : $('#username1').val(),
+                password: $("#password1").val()
+            }
+            updateResponse(input,'login','POST');
+        });
+        $('#logout').click(()=>{
+            updateResponse({},'logout','POST');
+        });
+        $('#adduser').click(()=>{
+            let input = {
+                username : $('#username2').val(),
+                password: $("#password2").val(),
+                email: $('#email1').val()
+            }
+            updateResponse(input,'adduser','POST');
+        });
+        $('#verifyuser').click(()=>{
+            let input = {
+                key : $('#key').val(),
+                email: $('#email2').val()
+            }
+            updateResponse(input,'verify','POST');
+        });
+    });
+    function updateResponse(object,endpoint,type){
+        $.ajax({
+                 url: "http://130.245.171.197/"+endpoint,
+                 type,
+                 data: JSON.stringify(object),
+                 contentType: "application/json",
+                 complete:   (data,status,jQxhr) =>{
+                    $('#result').text(function(i, oldText) {
+                         return JSON.stringify(data.responseJSON);
+                    }); 
+                }
+            });
+    } 
+</script>
+</html>
