@@ -1,12 +1,11 @@
 const mongoose = require('mongoose');
 const elasticsearch = require('elasticsearch');
 const uuidv4 = require('uuid/v4');
-const cassandra = require('cassandra-driver');
 
 
 
 
-mongoose.connect("mongodb://192.168.122.22/squawker",{ useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect("mongodb://130.245.168.250/squawker",{ useNewUrlParser: true, useUnifiedTopology: true});
 const db = mongoose.connection;
   
 db.once('open', () => { 
@@ -28,7 +27,7 @@ db.once('open', () => {
 });
 
 const elasticClient = new elasticsearch.Client({
-    host: 'http://192.168.122.23:9200',
+    host: 'http://130.245.168.208:9200',
     log: 'trace'
 });
 
