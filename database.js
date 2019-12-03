@@ -184,9 +184,9 @@ const initIndex = (indexName) => {
 }
 
 initIndex("squawks");
-/*elasticClient.indices.delete({
-    index: 'squawks',
-  });*/
+//elasticClient.indices.delete({
+//    index: 'squawks',
+//  });
 
 module.exports = {
     searchbyId,

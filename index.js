@@ -31,13 +31,13 @@ app.post("/adduser",(req,res) => {
     let password = req.body.password;
     mongoose.model('users').countDocuments({username}, (err,count) => {
         if(count > 0){
-            res.status(500);
+            res.status(400);
             res.json({status: 'error', error: 'username or email already taken'});
         }
         else{
             mongoose.model('users').countDocuments({email}, (err,count) => {
                 if(count > 0){
-                    res.status(500);
+                    res.status(400);
                     res.json({status: 'error', error: 'username or email already taken'});
                     return;
                 }
@@ -51,7 +51,7 @@ app.post("/adduser",(req,res) => {
                 newuser.key = uuidv4();
                 newuser.save((err,doc) => {
                    if(err) { 
-                        res.status(500);
+                        res.status(400);
                         res.json({status: 'error', error: 'error adding user'});
                     }
                     else{
@@ -74,13 +74,13 @@ app.post("/login",(req,res) => {
     mongoose.model('users').findOne(user).exec().then((doc) => { 
         console.log(doc);
         if(!doc || doc.verified == false){
-              res.status(500);
+              res.status(400);
               res.json({status: 'error', error: "user not found or not verified"});
           }
         else{
            jwt.sign({user}, 'MySecretKey',(err, token) => {
                  if(err) {
-                     res.status(500); 
+                     res.status(400); 
                      res.send({status: 'error', error: "error making key"})}
                  else {
                      res.cookie('token',token);
@@ -95,7 +95,7 @@ app.post("/login",(req,res) => {
 app.post("/logout",verifyToken,(req,res) => {
     jwt.verify(req.token, 'MySecretKey',(err, data)=>{
         if(err) {
-            res.status(500);
+            res.status(400);
             res.json({status:'error', error:"error verifying key"});}
         else{
            let Blacklist = mongoose.model('blacklist');
@@ -104,7 +104,7 @@ app.post("/logout",verifyToken,(req,res) => {
            invalidToken.token = req.token;
            invalidToken.save((err, doc) => {
                if(err) {
-                   res.status(500);
+                   res.status(400);
                    res.json({status: 'error', error:"error saving token"});}
                else{
                    res.status(200);
@@ -123,7 +123,7 @@ app.post("/verify",(req,res) => {
     }
     mongoose.model('users').findOne(param).exec().then((doc) => {
          if(!doc) { 
-               res.status(500);
+               res.status(400);
                res.json({status: 'error', error: "user not found"});
          }
          else{
@@ -131,7 +131,7 @@ app.post("/verify",(req,res) => {
              doc.verified = true;
              doc.save((err, doc)=>{
                if(err) {
-                   res.status(500); 
+                   res.status(400); 
                    res.json({status: "error", error:"error verifying"});
                 }
                 else{
@@ -142,7 +142,7 @@ app.post("/verify",(req,res) => {
                 });
           }
     }).catch(err => {
-        res.status(500);
+        res.status(400);
         res.json({status: 'error',error:"error finding user"});
     });
 });
@@ -153,7 +153,7 @@ app.get('/user/:username',(req,res) => {
     mongoose.model('users').findOne({username}).exec().then((doc) => { 
         console.log(doc);
         if(!doc || doc.verified == false){
-              res.status(500).json({status: 'error', error: "user not found"});
+              res.status(400).json({status: 'error', error: "user not found"});
         }
         else{
            let user = {
@@ -195,7 +195,7 @@ app.get('/user/:username/followers',(req,res) => {
     mongoose.model('users').findOne({username}).exec().then((doc) => { 
          console.log(doc);
          if(!doc || doc.verified == false){
-               res.status(500).json({status: 'error', error: "user not found"});
+               res.status(400).json({status: 'error', error: "user not found"});
          }
          else{
             let followers = doc.followers.slice(0,limit);
@@ -216,7 +216,7 @@ app.get('/user/:username/following',(req,res) => {
     mongoose.model('users').findOne({username}).exec().then((doc) => { 
           console.log(doc);
          if(!doc || doc.verified == false){
-               res.status(500).json({status: 'error', error: "user not found or verified"});
+               res.status(400).json({status: 'error', error: "user not found or verified"});
          }
          else{
             let following = doc.following.slice(0,limit);
@@ -228,7 +228,7 @@ app.get('/user/:username/following',(req,res) => {
 function verifyToken(req,res,next) {
     let token = req.cookies['token'];
     if(!token){ 
-        res.status(500);
+        res.status(400);
         res.json({status: 'error', error: 'User not logged in'});
     }
     else{
@@ -237,5 +237,5 @@ function verifyToken(req,res,next) {
     }
 }
 
-app.listen(5000,"192.168.122.21");
+app.listen(5000,"192.168.122.36");
 
